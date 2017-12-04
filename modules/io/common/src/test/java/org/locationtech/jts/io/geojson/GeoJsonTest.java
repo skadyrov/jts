@@ -18,6 +18,7 @@ import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 
+import org.locationtech.jts.util.Assert;
 import test.jts.GeometryTestCase;
 
 
@@ -90,6 +91,24 @@ public class GeoJsonTest extends GeometryTestCase {
 
   public void testGeometryCollectionEmpty() throws ParseException {
     runTest("GEOMETRYCOLLECTION EMPTY");
+  }
+
+  public void testGeoJsonPoint() throws ParseException {
+    runGeoJsonTest("{\"type\":\"Point\",\"coordinates\":[125.6,10.1]}");
+  }
+
+  public void testGeoJsonMultiPolygon() throws ParseException {
+    runGeoJsonTest("{\"type\":\"MultiPolygon\",\"coordinates\":[[[[74.2943,43.23824],[74.30843,43.21632],[74.15575,43.23163],[74.15913,43.23624],[74.2943,43.23824]]]]}");
+  }
+
+  private void runGeoJsonTest(String json) throws ParseException {
+    json = json.trim();
+    GeoJsonReader reader = new GeoJsonReader();
+    Geometry geometry = reader.read(json);
+    GeoJsonWriter writer = new GeoJsonWriter();
+    writer.setEncodeCRS(false);
+    String result = writer.write(geometry);
+    Assert.equals(json, result);
   }
 
   private void runTest(String wkt) throws ParseException {
